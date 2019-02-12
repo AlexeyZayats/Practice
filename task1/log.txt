@@ -1,0 +1,11 @@
+commit 6527e52789197ff56adad0debb1349fbe7b92706 (HEAD -> master)
+Author: Alexey Zayats <cheburah2018@gmail.com>
+Date:   Tue Feb 12 19:50:25 2019 +0300
+
+    add status.txt
+
+commit f0db42b3d54835ee74654e3bc9f9f7d3bd8706f1
+Author: Alexey Zayats <cheburah2018@gmail.com>
+Date:   Tue Feb 12 19:49:07 2019 +0300
+
+    add .gitignore
