@@ -1,0 +1,77 @@
+
+<!doctype html>
+<html>
+ <head>
+ 	 <meta charset="utf-8">
+ 	 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ 	 <link href="styles.css" rel="stylesheet"> 
+ 	 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+ 	 
+ 	 <title>InstaX</title>
+ </head>
+<body>
+  <header id="pageHeader">
+  	<div id="headerContent">
+    	<img id="logo" src="img\logo.jpg" alt="InstaX logo"></img>
+    	<p id="name">Alexey Zayats</p>
+    	<div id="ref">
+    	   <a  href="index.html"> Add photo</a>
+    	   <a  href="index.html"> Sign out</a>
+        </div>
+    </div>
+  </header>
+  <article id="mainArticle">
+  	<div class="photoPost">
+       <a id="delete"  href="index.html"> <i class="fas fa-trash"> </i></a>
+       <a id="edit" href="index.html"> <i class="fas fa-cog"></i> </a>
+       <button id="like"><i  class="far fa-heart"></i></button>
+       <p id="author"> Alexey Zayats</p>
+       <p id="date">02-28-2019</p>
+       <div id="tags">#geometry #colorfull</div>
+       <div id="description">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', </div>
+  	   <img id="photo" src="img\2.png"></img>
+
+  	</div>
+  	<hr>
+  	<div class="photoPost">
+       <a id="delete" href="index.html"> <i class="fas fa-trash"> </i></a>
+       <a id="edit" href="index.html"> <i class="fas fa-cog"></i> </a>
+        <button id="like"><i  class="far fa-heart"></i></button>
+        <p id="author"> Alexey Zayats </p>
+       <p id="date">02-23-2019</p>
+       <div id="tags">#nature #example</div>
+       <div id="description">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', </div>
+  	   <img id="photo" src="img\3.jpg"></img>
+  	</div>
+  	<hr>
+  	<div class="photoPost">
+       <a id="delete" href="index.html"> <i class="fas fa-trash"> </i></a>
+       <a id="edit" href="index.html"> <i class="fas fa-cog"></i> </a>
+        <button id="like"><i  class="far fa-heart"></i></button>
+        <p id="author"> Alexey Zayats </p>
+       <p id="date">02-15-2019</p>
+       <div id="tags">#nature #example</div>
+       <div id="description">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', </div>
+  	   <img id="photo" src="img\3.jpg"></img>
+  	</div>
+  	 <button id="loadmore">Load more</button>
+  </article>
+  <nav id="mainNav">
+  	<p>Filters</p>
+  	<form class="filter">
+  		<input type="text" placeholder="By name..">
+  		<input type="text" placeholder="By date..">
+  		<input list="hashtags"  placeholder="By hashtags"   >
+            <datalist id="hashtags">
+                <option value="#Exam"></option>
+                <option value="#Example"></option>
+            </datalist>
+        <button>Submit</button>
+  	</form>
+  </nav>
+  <footer id="pageFooter">
+  	 <p>Alexey Zayats | 2nd year,5th group | Cheburah2018@gmail.com </p>
+     <p>InstaX © 2019. Last update 03.10.2019 </p>
+  </footer>
+</body> 
+</html>
