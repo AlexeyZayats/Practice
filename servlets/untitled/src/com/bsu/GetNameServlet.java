@@ -8,9 +8,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 
-public class StatusServlet extends HttpServlet {
+public class GetNameServlet extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws  IOException {
-      response.getOutputStream().println("<html><h2 style='color:red'> Application is running<h2></html>");
+        String name=request.getParameter("name");
+        response.getOutputStream().println("Name is "+name);
     }
 }

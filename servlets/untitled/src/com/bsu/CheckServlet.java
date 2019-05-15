@@ -11,16 +11,13 @@ import java.io.PrintWriter;
 import java.util.Enumeration;
 
 public class CheckServlet extends HttpServlet {
-    private static final String DELIMITER=": ";
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getOutputStream().println("{ \"sucess\": true}");
 
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-    }
 }

@@ -8,12 +8,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 
-public class test2Servlet extends HttpServlet {
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+public class Test2Servlet extends HttpServlet {
 
-    }
-
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws  IOException {
      String path=request.getContextPath()+"/page";
      response.sendRedirect(path);
     }
