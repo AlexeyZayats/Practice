@@ -43,5 +43,8 @@ class TapeView {
     if (post.description) {
       ePost.querySelector('.description').innerHTML = `${post.description}`;
     }
+    if(post.hashtags){
+      ePost.querySelector('.tags').innerHTML=`${post.hashtags}`;
+    }
   }
 }

@@ -235,3 +235,5 @@ test.initPage(photoPosts.splice(0, 5));
 test.addPost(photoPosts[1]);
 test.removePost(1);
 test.edit(2, { description: 'qwert', author: 'qeqweeee', asd: 1 });
+test.edit(2,{hashtags:['#dd']});
+test.edit(7,{hashtags:['dd']});
