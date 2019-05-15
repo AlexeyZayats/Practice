@@ -17,16 +17,15 @@ public class TimeMeasurementFilter implements Filter {
         long start=System.currentTimeMillis();
         chain.doFilter(request,response);
         long end=System.currentTimeMillis();
-
-         HttpServletResponse httpServletResponse=(HttpServletResponse) response;
-         HttpServletRequest httpRequest =(HttpServletRequest) request;
-         String path=httpRequest.getRequestURI();
-         String method=httpRequest.getMethod();
-         System.out.println(String.format("%s -http://localhost:8080%s -  %d ms",method, path,end-start));
+        HttpServletRequest httpRequest =(HttpServletRequest) request;
+        String path=httpRequest.getRequestURI();
+        String method=httpRequest.getMethod();
+        String host=httpRequest.getHeader("host");
+        System.out.println(String.format("%s -%s%s -  %d ms",method,host, path,end-start));
     }
 
     @Override
-    public void init(FilterConfig config) throws ServletException {
+    public void init(FilterConfig config)  {
 
     }
 
