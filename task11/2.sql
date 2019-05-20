@@ -1,0 +1,1 @@
+select * FROM photos.photo_post where USER_ID=102 ;
