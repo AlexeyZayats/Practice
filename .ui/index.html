@@ -13,34 +13,52 @@
   <header class="pageHeader">
   	<div class="headerContent">
     	<img class="logo" src="img\logo.jpg" alt="InstaX logo"></img>
-    	<p class="name">Alexey Zayats</p>
+    	<p class="name"></p>
     	<div class="ref">
-    	   <a  href="index.html"> Add photo</a>
-    	   <a  href="index.html"> Sign out</a>
+    	   <button class="add" > Add photo</button>
+    	   <button  class='signin'> Sign in</button>
+          <button  class='signout'> Sign out</button>
         </div>
     </div>
   </header>
   <article class="mainArticle">
-  	
+
   	 <button class="loadmore">Load more</button>
   </article>
+  <form class="signin-form">
+        <input type="text" required class="Login" placeholder="Login">
+        <input type="text" required class="Password" placeholder="Password">
+        <input type='submit' value='Login' class="Submit_Signin">  </input>
+    </form>
+    <form class="addPost">
+     <p class="iauthor"> </p>
+     <p class="idate"></p>
+     <input class='inputfile' type='file' onchange="readURL(this);" />
+     <input class='imageURL' required type='url' placeholder="or input photo URL:" /> 
+     <img class='preimage' src="http://placehold.it/270" alt="your image" />
+     <input class="idescription" name='desc' required placeholder="Description" type='text'></input>
+     <input class="itags" placeholder="Hashtags" type='text'></input>
+     <input type='submit' value='Save' class='submitPost' ></input>
+     <div class='hidden' ></div>
+    </form>
   <nav class="mainNav">
   	<p>Filters</p>
   	<form class="filter">
-  		<input type="text" placeholder="By name..">
-  		<input type="text" placeholder="By date..">
-  		<input list="hashtags"  placeholder="By hashtags"   >
+  		<input type="text" class='filterName' placeholder="By name..">
+  		<input type="text" class='filterDate' placeholder="By date..(mm.dd.yyyy)" >
+  		<input list="hashtags" class='filterTags' placeholder="By hashtags (use #)"   >
             <datalist class="hashtags">
                 <option value="#Exam"></option>
                 <option value="#Example"></option>
             </datalist>
-        <button>Submit</button>
+        <button  class='filterSubmit'>Submit</button>
   	</form>
   </nav>
   <footer class="pageFooter">
   	 <p>Alexey Zayats | 2nd year,5th group | Cheburah2018@gmail.com </p>
-     <p>InstaX © 2019. Last update 04.22.2019 </p>
+     <p>InstaX © 2019. Last update 05.19.2019 </p>
   </footer>
+ <!-- <script src="fillStorage.js" class="blank"></script> -->
   <script src="Model.js"></script>
 <script src ="TapeView.js"></script>
 <script src="Control.js"></script>

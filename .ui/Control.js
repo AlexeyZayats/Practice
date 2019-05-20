@@ -1,239 +1,234 @@
 
-const test = (function () {
-  const c = new PostList();
-  return {
-    addPost(post) {
-      if (c.add(post)) {
-        TapeView.addPost(post);
-      }
-    },
-    removePost(id) {
-      if (c.remove(`${id}`)) {
-        TapeView.removePost(`${id}`);
-      }
-    },
-    edit(id, post) {
-      if (c.edit(`${id}`, post)) {
-        TapeView.editPost(`${id}`, post);
-      }
-    },
-    initPage(posts) {
-      c.addAll(posts);
-      TapeView.showTape(c.getPage(0, 10));
-    },
+class Controller {
+  constructor() {
+    const posts = JSON.parse(localStorage.getItem('posts'));
+    this._photoList = new PostList();
+    this._photoList.addAll(posts);
+    this._id = posts.length + 1;
+    const user = JSON.parse(localStorage.getItem('user'));
+    this._view = new TapeView(user);
+    this._mainArticle = document.querySelector('.mainArticle');
+    this._mainNav = document.querySelector('.mainNav');
+    this._postOnScreen = 0;
+  }
 
-  };
+  _showTape(skip = 0, top = 10, filterconfig = {}) {
+    cont._view._clearTape();
+    cont._mainArticle.style.display = 'initial';
+    cont._mainNav.style.display = 'initial';
+    document.querySelector('.hidden').textContent = '';
+    document.querySelector('.loadmore').style.display = 'initial';
+    cont._view._showHeader();
+    const posts = cont._photoList.getPage(skip, top, filterconfig);
+    cont._view.showTape(posts);
+    cont._postOnScreen = posts.length;
+  }
+
+  static _getHome() {
+    cont._view._clearTape();
+    cont._view._clearFilter();
+    cont._view._showHeader();
+    cont._showTape();
+  }
+
+  static _showSigninForm() {
+    cont._mainArticle.style.display = 'none';
+    cont._mainNav.style.display = 'none';
+    document.querySelector('.signin').style.display = 'none';
+    document.querySelector('.loadmore').style.display = 'none';
+    const signinForm = document.querySelector('.signin-form');
+    signinForm.style.display = 'grid';
+  }
+
+  static _submitSignin(e) {
+    const signinForm = document.querySelector('.signin-form');
+    const name = signinForm[0];
+    const password = signinForm[1];
+    if (name.value.length > 0 && password.value.length > 0) {
+      cont._view._user = name.value;
+      localStorage.setItem('user', JSON.stringify(name.value));
+      signinForm.style.display = 'none';
+      name.value = '';
+      password.value = '';
+      cont._showTape();
+      cont._view._clearFilter();
+      e.preventDefault();
+    }
+  }
+
+  static _signOut() {
+    cont._view._clearTape();
+    cont._view._clearFilter();
+    cont._view._user = 'guest';
+    cont._view._showHeader();
+    cont._showTape();
+  }
+
+  static _showAddForm() {
+    cont._mainArticle.style.display = 'none';
+    cont._mainNav.style.display = 'none';
+    document.querySelector('.signin').style.display = 'none';
+    document.querySelector('.loadmore').style.display = 'none';
+    const addForm = document.querySelector('.addPost');
+    addForm.style.display = 'grid';
+    addForm.querySelector('.iauthor').textContent = `Author: ${cont._view._user}`;
+    const d = new Date();
+    const fd = `${d.getMonth() + 1}.${d.getDate()}.${d.getFullYear()} ${d.getHours()}:${d.getMinutes()}`;
+    addForm.querySelector('.idate').textContent = `Created at: ${fd}`;
+  }
+
+  static _addPost(e) {
+    const form = document.querySelector('.addPost');
+    const post = {};
+    post.description = form.desc.value;
+    post.createdAt = new Date(form.querySelector('.idate').textContent.slice(12));
+    post.author = form.querySelector('.iauthor').textContent.slice(8);
+    post.photoLink = form.querySelector('.imageURL').value;
+    post.deleted = false;
+    const tags = form.querySelector('.itags').value.split(' ');
+    post.hashtags = tags.splice();
+    let flag;
+    const id = form.querySelector('.hidden').textContent;
+    if (id > 0) {
+      flag = cont._photoList.edit(id, post);
+    } else {
+      post.id = `${cont._id}`;
+      flag = cont._photoList.add(post);
+    }
+    if (flag) {
+      e.preventDefault();
+      if (!(id > 0)) {
+        cont._id++;
+      }
+      form.style.display = 'none';
+      form.desc.value = '';
+      form.querySelector('.preimage').src = 'http://placehold.it/270';
+      form.querySelector('.imageURL').value = '';
+      form.querySelector('.inputfile').value = '';
+      cont._view._clearFilter();
+      localStorage.setItem('posts', JSON.stringify(cont._photoList._posts));
+      cont._showTape();
+    }
+  }
+
+  _removePost(id) {
+    cont._photoList.get(id).deleted = true;
+    localStorage.setItem('posts', JSON.stringify(cont._photoList._posts));
+    cont._showTape();
+  }
+
+  _editPost(id) {
+    const post = cont._photoList.get(`${id}`);
+    Controller._showAddForm();
+    const form = document.querySelector('.addPost');
+    form.querySelector('.idescription').value = post.description;
+    form.querySelector('.itags').value = post.hashtags;
+    form.querySelector('.imageURL').value = post.photoLink;
+    form.querySelector('.preimage').src = post.photoLink;
+    const d = new Date(post.createdAt);
+    const fd = `${d.getMonth() + 1}.${d.getDate()}.${d.getFullYear()} ${d.getHours()}:${d.getMinutes()}`;
+    form.querySelector('.idate').textContent = `Created at: ${fd}`;
+    form.querySelector('.hidden').textContent = post.id;
+  }
+
+  static _filterPosts(e) {
+    e.preventDefault();
+    const filterconfig = {};
+    filterconfig.hashtags = [];
+    const form = document.querySelector('.filter');
+    const name = form.querySelector('.filterName').value;
+    if (name.length > 0) {
+      filterconfig.author = name;
+    }
+    const date = new Date(form.querySelector('.filterDate').value);
+    if (date > 0) {
+      filterconfig.createdAt = date;
+    }
+    const tagsString = form.querySelector('.filterTags').value;
+    if (tagsString.length > 0) {
+      if (tagsString[0] != '#') {
+        alert('Please,use # for hashtags');
+      } else {
+        const tags = tagsString.split('#');
+        filterconfig.hashtags = tags.slice();
+      }
+    }
+    cont._showTape(0, 10, filterconfig);
+  }
+
+  static _loadMore() {
+    const top = cont._postOnScreen;
+    const posts = cont._photoList.getPage(top, 10, {});
+    cont._view.showTape(posts);
+    cont._postOnScreen += posts.length;
+    if (cont._postOnScreen >= cont._photoList._posts.length) {
+      document.querySelector('.loadmore').style.display = 'none';
+    }
+  }
+
+  static _postChange(event) {
+    switch (event.target.className) {
+      case 'fas fa-trash': {
+        const { id } = event.target.parentElement.parentElement;
+        cont._removePost(id);
+        break;
+      }
+      case 'fas fa-cog': {
+        const { id } = event.target.parentElement.parentElement;
+        cont._editPost(id);
+        break;
+      }
+    }
+  }
+}
+
+
+const cont = new Controller();
+cont._showTape();
+(function foo() {
+  const signin = document.querySelector('.signin');
+  signin.addEventListener('click', Controller._showSigninForm);
+
+  const submitSignin = document.querySelector('.Submit_Signin');
+  submitSignin.addEventListener('click', Controller._submitSignin);
+
+  const signout = document.querySelector('.signout');
+  signout.addEventListener('click', Controller._signOut);
+
+  const filter = document.querySelector('.filterSubmit');
+  filter.addEventListener('click', Controller._filterPosts);
+
+  const loadmore = document.querySelector('.loadmore');
+  loadmore.addEventListener('click', Controller._loadMore);
+
+  const home = document.querySelector('.logo');
+  home.addEventListener('click', Controller._getHome);
+
+  const addForm = document.querySelector('.add');
+  addForm.addEventListener('click', Controller._showAddForm);
+
+  const savePost = document.querySelector('.submitPost');
+  savePost.addEventListener('click', Controller._addPost);
+
+  const mainArticle = document.querySelector('.mainArticle');
+  mainArticle.addEventListener('click', Controller._postChange);
+  const deletePost = document.querySelectorAll('.delete');
+  deletePost.forEach(item => item.addEventListener('click', Controller._removePost));
 }());
 
-const photoPosts = [
+function readURL(input) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
 
-  {
-    id: '1',
-    description: 'Clockwork Orange',
-    createdAt: new Date('2018-02-23T23:00:00'),
-    author: 'Kubrick',
-    photoLink: ' http://lightsup.ru/wp-content/uploads/2013/02/luchshie-postery-k-filmam-3.jpg',
-    hashtags: ['#ultraviolence', '#milk'],
-    likes: ['Tarantino', 'Mr.A'],
-  },
+    reader.onload = function (e) {
+      const image = document.querySelector('.preimage');
 
-  {
-    id: '2',
-    description: 'Pulp Fiction',
-    createdAt: new Date('2018-04-22T23:00:00'),
-    author: 'Tarantino',
-    photoLink: ' http://lightsup.ru/wp-content/uploads/2013/02/luchshie-postery-k-filmam-14.jpg',
-    hashtags: ['#milkshake'],
-    likes: [],
-  },
+      image.src = e.target.result;
+      image.style.height = '270px';
+      const url = document.querySelector('.imageURL');
+      url.value = e.target.result;
+    };
 
-  {
-    id: '3',
-    description: 'Fight Club',
-    createdAt: new Date('2017-03-12T23:00:00'),
-    author: 'Fincher',
-    photoLink: ' https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTridq2FkTN8Q112GU2e24DwwY7S_Ked8iykGdv54eoEClAap17',
-    hashtags: ['#soap', '#pandas'],
-    likes: ['Sebastian', 'Tyler Derden'],
-  },
-
-  {
-    id: '4',
-    description: 'One flew over ..',
-    createdAt: new Date('2019-12-12T23:00:00'),
-    author: 'Formann',
-    photoLink: ' https://www.buro247.kz/thumb/670x830_0/images/progression-of-best-picture-movie-posters-1.jpg',
-    hashtags: ['#asylum'],
-    likes: [],
-  },
-
-  {
-    id: '5',
-    description: 'Kill Bill',
-    createdAt: new Date('2005-10-12T23:10:00'),
-    author: 'Tarantino',
-    photoLink: ' https://xage.ru/media/posts/2012/12/3/52-minimalisticheskih-postera-k-filmam_2.jpg',
-    hashtags: ['#oneeye', '#snake'],
-    likes: ['Uma Thurman'],
-  },
-
-  {
-    id: '6',
-    description: 'The Big Lebowski',
-    createdAt: new Date('1998-11-30T12:10:00'),
-    author: 'Cohan',
-    photoLink: ' https://xage.ru/media/posts/2012/12/3/52-minimalisticheskih-postera-k-filmam_5.jpg',
-    hashtags: ['#carpet', '#iamwalrus'],
-    likes: [],
-  },
-
-  {
-    id: '7',
-    description: 'Scott Piligrim',
-    createdAt: new Date('2014-11-30T12:10:00'),
-    author: 'Edgar Wright',
-    photoLink: ' https://xage.ru/media/posts/2012/12/3/52-minimalisticheskih-postera-k-filmam_8.jpg',
-    hashtags: ['#veganpower'],
-    likes: ['Mr.Pirate'],
-  },
-
-  {
-    id: '8',
-    description: 'The Thing',
-    createdAt: new Date('2013-04-30T12:10:00'),
-    author: 'John Carpenther',
-    photoLink: 'https://xage.ru/media/posts/2012/12/3/52-minimalisticheskih-postera-k-filmam_18.jpg',
-    hashtags: ['#iLoveNorway'],
-    likes: ['H.P.Lovecraft'],
-  },
-
-  {
-    id: '9',
-    description: 'Space Odyssey',
-    createdAt: new Date('2014-11-01T12:10:00'),
-    author: 'Kubrick',
-    photoLink: 'https://xage.ru/media/posts/2012/12/3/52-minimalisticheskih-postera-k-filmam_21.jpg',
-    hashtags: ['#redeye', '#monkeysforever'],
-    likes: ['GLaDOS'],
-  },
-
-  {
-    id: '10',
-    // description: 'Blade Runner',
-    createdAt: new Date('2011-11-11T12:10:00'),
-    author: 'Scott',
-    photoLink: 'https://xage.ru/media/posts/2012/12/3/52-minimalisticheskih-postera-k-filmam_22.jpg',
-    hashtags: ['#electrosheep'],
-    likes: [],
-  },
-
-  {
-    // id: '11',
-    description: 'Fullmetal Jacket',
-    createdAt: new Date('1995-03-15T12:10:00'),
-    author: 'Kubrick',
-    photoLink: 'https://xage.ru/media/posts/2012/12/3/52-minimalisticheskih-postera-k-filmam_26.jpg',
-    hashtags: ['#borntokill'],
-    likes: [],
-  },
-
-  {
-    id: '12',
-    description: 'Drive',
-    // createdAt: new Date('2018-03-15T12:10:00'),
-    author: 'Refn',
-    photoLink: 'https://xage.ru/media/posts/2012/12/3/52-minimalisticheskih-postera-k-filmam_44.jpg',
-    hashtags: ['#neon'],
-    likes: [],
-  },
-
-  {
-    id: '13',
-    description: 'Watchmen',
-    createdAt: new Date('1988-03-15T12:10:00'),
-    author: 'Snyder',
-    // photoLink: 'https://bugaga.ru/uploads/posts/2011-09/1316442332_1-14.jpg',
-    hashtags: ['#comedian'],
-    likes: ['Mr.A'],
-  },
-
-  {
-    id: '14',
-    description: 'Watchmen',
-    createdAt: new Date('1988-03-15T12:10:00'),
-    author: 'Snyder',
-    photoLink: 'https://bugaga.ru/uploads/posts/2011-09/1316442332_1-14.jpg',
-    // hashtags: ['#comedian'],
-    likes: ['Mr.A'],
-  },
-
-  {
-    id: '15',
-    description: 'The Matrix',
-    createdAt: new Date('1990-06-21T14:15:00'),
-    author: 'Wachowski Br..Sisters',
-    photoLink: 'https://static.kulturologia.ru/files/u18046/thematrix.jpg',
-    hashtags: ['#simulacra'],
-    // likes: ['Mr.A', 'Woman in_red'],
-  },
-
-  {
-    id: '16',
-    description: 'Reservoir Dogs',
-    createdAt: new Date('1991-06-21T14:15:00'),
-    // author: 'Tarantino',
-    photoLink: 'https://static.kulturologia.ru/files/u18046/reservoirdogs.jpg',
-    hashtags: [],
-    likes: [],
-  },
-
-  {
-    id: '1',
-    description: 'Se7en',
-    createdAt: new Date('1992-09-22T14:15:00'),
-    author: 'Fincher',
-    photoLink: 'https://interesnoznat.com/wp-content/uploads/%D0%A1%D0%B5%D0%BC%D1%8C-1995-688x963.jpg',
-    hashtags: ['#whatsinthebox??'],
-    likes: ['Kevin Spacey'],
-  },
-
-  {
-    id: '18',
-    description: '1984',
-    createdAt: new Date('1984-08-04T14:15:00'),
-    author: 'Orwell',
-    photoLink: 'https://interesnoznat.com/wp-content/uploads/tumblr_oeeve4r9Uu1v3gtoxo1_1280.jpg',
-    hashtags: ['#2x2=5'],
-    likes: [],
-  },
-
-  {
-    id: '19',
-    description: 'Memento',
-    createdAt: new Date('1997-04-02T14:15:00'),
-    author: 'Nolan',
-    photoLink: 'http://lamcdn.net/lookatme.ru/post_image-image/qxuA0KVSmKBJM94OnwtUkQ-article.jpg',
-    hashtags: ['#tatoo'],
-    likes: [],
-  },
-
-  {
-    id: '20',
-    description: 'Twin Peaks',
-    createdAt: new Date('1998-04-04T14:15:00'),
-    author: 'Lynch',
-    photoLink: 'http://lamcdn.net/lookatme.ru/post_image-image/OnXcDXwK92bcPBf6U-1FKw-article.jpg',
-    hashtags: ['#coffee', '#cherrypie'],
-    likes: ['Lora Palmer'],
-  },
-
-
-];
-
-
-test.initPage(photoPosts.splice(0, 5));
-test.addPost(photoPosts[1]);
-test.removePost(1);
-test.edit(2, { description: 'qwert', author: 'qeqweeee', asd: 1 });
-test.edit(2,{hashtags:['#dd']});
-test.edit(7,{hashtags:['dd']});
+    reader.readAsDataURL(input.files[0]);
+  }
+}

@@ -13,9 +13,7 @@ class PostList {
         return posts.filter(item => createdAt >= item.createdAt);
       },
       _hashtags(posts, hashtags) {
-        return posts.filter(item => hashtags.every(tag => 
-          item.hashtags.some(intag => 
-            (intag.toLowerCase().indexOf(tag.toLowerCase()) >= 0))));
+        return posts.filter(item => hashtags.every(tag => item.hashtags.some(intag => (intag.toLowerCase().indexOf(tag.toLowerCase()) >= 0))));
       },
     };
   }
@@ -24,11 +22,12 @@ class PostList {
     if (this._posts.length === 0) {
       return null;
     }
-    return this._posts.find(item => item.id === id);
+    return this._posts.find(item => item.id === id && item.deleted == false);
   }
 
   getPage(skip = 0, top = 10, filterConfig = {}) {
     let filteredPosts = this._posts.slice();
+    filteredPosts = filteredPosts.filter(item => !item.deleted);
     if (filterConfig) {
       Object.keys(filterConfig).forEach(
         (field) => {
@@ -37,7 +36,7 @@ class PostList {
         },
       );
     }
-    filteredPosts.sort((a, b) => b.createdAt - a.createdAt);
+    filteredPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     return filteredPosts.slice(skip, top + skip);
   }
 
