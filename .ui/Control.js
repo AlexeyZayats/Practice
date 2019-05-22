@@ -6,10 +6,12 @@ class Controller {
     this._photoList.addAll(posts);
     this._id = posts.length + 1;
     const user = JSON.parse(localStorage.getItem('user'));
+    this._user=user;
     this._view = new TapeView(user);
     this._mainArticle = document.querySelector('.mainArticle');
     this._mainNav = document.querySelector('.mainNav');
     this._postOnScreen = 0;
+    this._filter={}
   }
 
   _showTape(skip = 0, top = 10, filterconfig = {}) {
@@ -17,11 +19,20 @@ class Controller {
     cont._mainArticle.style.display = 'initial';
     cont._mainNav.style.display = 'initial';
     document.querySelector('.hidden').textContent = '';
-    document.querySelector('.loadmore').style.display = 'initial';
+    document.querySelector('.no-photos').style.display= 'none';
     cont._view._showHeader();
     const posts = cont._photoList.getPage(skip, top, filterconfig);
+    if (cont._photoList.getPage(skip,top+1,filterconfig).length>10) {
+      document.querySelector('.loadmore').style.display = 'block';
+    }
+    else{
+      document.querySelector('.loadmore').style.display='none';
+    }
     cont._view.showTape(posts);
     cont._postOnScreen = posts.length;
+    if(cont._postOnScreen==0){
+      document.querySelector('.no-photos').style.display='block';
+    }
   }
 
   static _getHome() {
@@ -86,7 +97,8 @@ class Controller {
     post.photoLink = form.querySelector('.imageURL').value;
     post.deleted = false;
     const tags = form.querySelector('.itags').value.split(' ');
-    post.hashtags = tags.splice();
+    post.hashtags = tags.filter(item =>item.charAt(0)=='#');
+    alert(post.hashtags);
     let flag;
     const id = form.querySelector('.hidden').textContent;
     if (id > 0) {
@@ -112,9 +124,12 @@ class Controller {
   }
 
   _removePost(id) {
+    const del=confirm('Delete photopost?');
+    if(del){
     cont._photoList.get(id).deleted = true;
     localStorage.setItem('posts', JSON.stringify(cont._photoList._posts));
     cont._showTape();
+    }
   }
 
   _editPost(id) {
@@ -141,7 +156,7 @@ class Controller {
       filterconfig.author = name;
     }
     const date = new Date(form.querySelector('.filterDate').value);
-    if (date > 0) {
+   if (date > 0) {
       filterconfig.createdAt = date;
     }
     const tagsString = form.querySelector('.filterTags').value;
@@ -153,29 +168,41 @@ class Controller {
         filterconfig.hashtags = tags.slice();
       }
     }
+    cont._filter=filterconfig;
     cont._showTape(0, 10, filterconfig);
   }
 
   static _loadMore() {
-    const top = cont._postOnScreen;
-    const posts = cont._photoList.getPage(top, 10, {});
+    const skip = cont._postOnScreen;
+    const posts = cont._photoList.getPage(skip, 10, cont._filter);
     cont._view.showTape(posts);
     cont._postOnScreen += posts.length;
-    if (cont._postOnScreen >= cont._photoList._posts.length) {
+    if (cont._photoList.getPage(skip,11,cont._filter).length <=10) {
       document.querySelector('.loadmore').style.display = 'none';
     }
   }
 
   static _postChange(event) {
+    const { id } = event.target.parentElement.parentElement;
     switch (event.target.className) {
       case 'fas fa-trash': {
-        const { id } = event.target.parentElement.parentElement;
         cont._removePost(id);
         break;
       }
       case 'fas fa-cog': {
-        const { id } = event.target.parentElement.parentElement;
         cont._editPost(id);
+        break;
+      }
+      case 'far fa-heart':{
+        cont._photoList.get(id).likes.push(cont._user);
+        localStorage.setItem('posts', JSON.stringify(cont._photoList._posts));
+        event.target.className='fas fa-heart';
+        break;
+      }
+      case 'fas fa-heart':{
+        cont._photoList.get(id).likes.splice( cont._photoList.get(id).likes.indexOf(cont._user),1);
+        localStorage.setItem('posts', JSON.stringify(cont._photoList._posts));
+        event.target.className='far fa-heart';
         break;
       }
     }

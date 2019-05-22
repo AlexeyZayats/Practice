@@ -35,6 +35,13 @@ class TapeView {
   }
 
   _showPost(post) {
+    let like='';
+    if(post.likes.includes(this._user)){
+       like='fas fa-heart';
+    }
+    else{
+       like='far fa-heart';
+    }
     const sPost = document.createElement('div');
     sPost.setAttribute('id', post.id);
     sPost.classList.add('photoPost');
@@ -45,7 +52,7 @@ class TapeView {
     <i class="fas fa-cog"></i>
     </div>
     <div class="like">
-    <i  class="far fa-heart"></i>
+    <i  class="${like}"></i>
     </div>
     <p class="author">${post.author} </p>
     <p class="date">${post.createdAt}</p>
