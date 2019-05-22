@@ -117,12 +117,15 @@ header, footer{
 	padding-left:5px; 
 }
 .loadmore{
-	
+	display: none;
 	border:none;
 	background: transparent;
     width: 100%;
     background: #0B2325;
     color:#C5C9C8;
+}
+.no-photos{
+	display: none;
 }
 .filter{
 	display: grid;

@@ -18,7 +18,7 @@ const posts=[{
     author: 'Tarantino',
     photoLink: ' http://lightsup.ru/wp-content/uploads/2013/02/luchshie-postery-k-filmam-14.jpg',
     hashtags: ['#milkshake'],
-    likes: [],
+    likes: ['Tarantino'],
     deleted: false,
   },
 

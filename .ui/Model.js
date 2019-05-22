@@ -10,7 +10,7 @@ class PostList {
         return posts.filter(item => item.author.toLowerCase().indexOf(author.toLowerCase()) >= 0);
       },
       _createdAt(posts, createdAt) {
-        return posts.filter(item => createdAt >= item.createdAt);
+        return posts.filter(item => createdAt >= new Date(item.createdAt));
       },
       _hashtags(posts, hashtags) {
         return posts.filter(item => hashtags.every(tag => item.hashtags.some(intag => (intag.toLowerCase().indexOf(tag.toLowerCase()) >= 0))));
@@ -59,13 +59,7 @@ class PostList {
       _photoLink(posts) {
         return !!posts.photoLink && posts.photoLink.length > 0;
       },
-      _hashtags(posts) {
-        if (posts.hashtags) {
-          return posts.hashtags.every(item => !!item && item.length > 0 && item.charAt(0) === '#');
-        }
-
-        return true;
-      },
+     
     };
     Object.keys(validateHelper).forEach(
       (field) => {
@@ -109,17 +103,7 @@ class PostList {
       _photoLink(posts) {
         return typeof (posts.photoLink) === 'string' && posts.photoLink.length > 0;
       },
-      _hashtags(posts) {
-        if (posts.hashtags) {
-          let flag = true;
-          posts.hashtags.forEach((item) => {
-            flag = flag && typeof (item) === 'string' && item.length > 1 && item.charAt(0) === '#';
-          });
-          return flag;
-        }
-
-        return true;
-      },
+      
     };
     if (!post) {
       return false;
@@ -133,12 +117,11 @@ class PostList {
       post.description = photoPost.description;
       change = true;
     }
-    if (validateHelper._hashtags(photoPost)) {
-      if (photoPost.hashtags) {
+    if (photoPost.hashtags) {
         post.hashtags = photoPost.hashtags;
         change = true;
-      }
     }
+    
 
     return change;
   }
