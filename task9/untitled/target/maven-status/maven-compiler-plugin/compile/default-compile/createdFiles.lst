@@ -1,0 +1,13 @@
+com\bsu\task9\PostList.class
+com\bsu\task9\Filter.class
+com\bsu\PageServlet.class
+com\bsu\WelcomeServlet.class
+com\bsu\Test2Servlet.class
+com\bsu\Test1Servlet.class
+com\bsu\GetNameServlet.class
+com\bsu\TimeMeasurementFilter.class
+com\bsu\task9\PhotoPost.class
+com\bsu\StatusServlet.class
+com\bsu\task9\PostListServlet.class
+com\bsu\CheckServlet.class
+com\bsu\task9\PostServlet.class
