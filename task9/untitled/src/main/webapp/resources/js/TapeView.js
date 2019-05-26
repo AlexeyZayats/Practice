@@ -31,7 +31,7 @@ class TapeView {
     const container = document.querySelector('.mainArticle');
     posts.forEach((post) => {
       container.insertBefore(this._showPost(post), container.querySelector('.loadmore'));
-    });
+  })
   }
 
   _showPost(post) {
@@ -74,7 +74,8 @@ class TapeView {
   _clearTape() {
     const posts = document.querySelectorAll('.photoPost');
     if (posts.length > 0) {
-      posts.forEach(item => item.remove());
+        posts.forEach(item => item.remove());
+    
     }
     document.querySelector('.addPost').style.display = 'none';
     document.querySelector('.signin-form').style.display = 'none';

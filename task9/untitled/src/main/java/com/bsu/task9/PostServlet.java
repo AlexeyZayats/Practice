@@ -1,11 +1,10 @@
 package com.bsu.task9;
 
-import javafx.geometry.Pos;
-import org.json.CDL;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.servlet.ServletException;
+
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -72,10 +71,10 @@ public class PostServlet extends HttpServlet {
                   jsonArrayTags.forEach(a->hashtags.add(a.toString()));
                   PhotoPost post=new PhotoPost(photoLink,description,hashtags);
                   if(Collection.posts.edit(id,post)){
-                      System.out.println("Succesfully edited");
+                      response.getOutputStream().println("Succesfully edited");
                   }
                   else{
-                      System.out.println("Couldn't edit post");
+                      response.getOutputStream().println("Couldn't edit post");
                   }
               } else {
                   response.getOutputStream().println("No post with this id");
@@ -86,13 +85,15 @@ public class PostServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)  {
        try {
+           response.setContentType("application/json");
            if (request.getParameter("id") == null) {
                response.getOutputStream().print("Please, input an id");
            }
            long id = Long.parseLong(request.getParameter("id").trim());
            if (Collection.posts.get(id) != null) {
                JSONObject jo=new JSONObject(Collection.posts.get(id));
-               response.getOutputStream().println( jo.toString());
+               response.getWriter().print( jo);
+               response.getWriter().flush();
            } else {
                response.getOutputStream().println("No post with this id");
            }
