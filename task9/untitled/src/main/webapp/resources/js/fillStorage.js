@@ -191,5 +191,6 @@ const posts=[{
 
 
 ];
+
 localStorage.setItem('posts',JSON.stringify(posts));
 localStorage.setItem('user',JSON.stringify('guest'));

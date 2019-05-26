@@ -7,42 +7,50 @@ class PostList {
     this._posts = (initialPosts || []);
     this.filterHelper = {
       _author(posts, author) {
-        return posts.filter(item => item.author.toLowerCase().indexOf(author.toLowerCase()) >= 0);
+          return posts.filter(item = > item.author.toLowerCase().indexOf(author.toLowerCase()) >= 0;
+      
       },
       _createdAt(posts, createdAt) {
-        return posts.filter(item => createdAt >= new Date(item.createdAt));
+          return posts.filter(item = > createdAt >= new Date(item.createdAt);
+      
       },
       _hashtags(posts, hashtags) {
-        return posts.filter(item => hashtags.every(tag => item.hashtags.some(intag => (intag.toLowerCase().indexOf(tag.toLowerCase()) >= 0))));
+          return posts.filter(item = > hashtags.every(tag = > item.hashtags.some(intag = > (intag.toLowerCase().indexOf(tag.toLowerCase()) >= 0);
+      
       },
     };
   }
 
   get(id) {
+   
     if (this._posts.length === 0) {
       return null;
     }
-    return this._posts.find(item => item.id === id && item.deleted == false);
+      return this._posts.find(item = > item.id === id && item.deleted == false;
+  
   }
 
   getPage(skip = 0, top = 10, filterConfig = {}) {
     let filteredPosts = this._posts.slice();
-    filteredPosts = filteredPosts.filter(item => !item.deleted);
-    if (filterConfig) {
+      filteredPosts = filteredPosts.filter(item = > !item.deleted;
+  
+      if (filterConfig) {
       Object.keys(filterConfig).forEach(
         (field) => {
           const _field = '_'.concat(field);
           filteredPosts = this.filterHelper[_field](filteredPosts, filterConfig[field]);
         },
-      );
+    )
     }
-    filteredPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    return filteredPosts.slice(skip, top + skip);
+      filteredPosts.sort((a, b) = > new Date(b.createdAt) - new Date(a.createdAt);
+  
+      return filteredPosts.slice(skip, top + skip);
   }
 
   remove(id) {
-    const index = this._posts.findIndex(item => item.id == id);
-    this._posts.splice(index, 1);
+      const index = this._posts.findIndex(item = > item.id == id;
+  
+      this._posts.splice(index, 1);
     return (index >= 0);
   }
 
@@ -65,8 +73,8 @@ class PostList {
       (field) => {
         res = res && validateHelper[field](photoPost);
       },
-    );
-    return res;
+  )
+      return res;
   }
 
 
@@ -82,11 +90,11 @@ class PostList {
     const res = [];
     const p = this;
     posts.forEach((post) => {
-      if (!p.add(post)) {
+      if (;!p.add(post);) {
         res.push(post);
       }
-    });
-    return res;
+  })
+      return res;
   }
 
   clear() {

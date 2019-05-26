@@ -18,7 +18,7 @@ import java.util.List;
 
 @WebServlet("/photoposts")
 public class PostListServlet extends HttpServlet {
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) {
        try{
            String author="";
            List<String> hashtags=new ArrayList<>();
@@ -40,11 +40,16 @@ public class PostListServlet extends HttpServlet {
            jsonArrayTags.forEach(a->hashtags.add(a.toString()));
            Filter filter=new Filter(author,date,hashtags);
            if (!Collection.posts.getPage(skip,top,filter).isEmpty()) {
+               response.setContentType("application/json");
+               JSONArray ja=new JSONArray();
                JSONObject jo;
                for(PhotoPost post:Collection.posts.getPage(skip,top,filter)){
                     jo=new JSONObject(post);
-                    response.getOutputStream().println( jo.toString());
+                    ja.put(jo);
+
                }
+               response.getWriter().print(ja);
+               response.getWriter().flush();
            } else {
                response.getOutputStream().println("No posts for this filter");
            }

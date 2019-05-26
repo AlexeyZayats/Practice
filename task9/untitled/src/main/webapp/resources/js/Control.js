@@ -1,10 +1,10 @@
 
 class Controller {
   constructor() {
-    const posts = JSON.parse(localStorage.getItem('posts'));
+   // const posts = JSON.parse(localStorage.getItem('posts'));
     this._photoList = new PostList();
     this._photoList.addAll(posts);
-    this._id = posts.length + 1;
+    this._id =  1;
     const user = JSON.parse(localStorage.getItem('user'));
     this._user=user;
     this._view = new TapeView(user);
@@ -21,15 +21,20 @@ class Controller {
     document.querySelector('.hidden').textContent = '';
     document.querySelector('.no-photos').style.display= 'none';
     cont._view._showHeader();
-    const posts = cont._photoList.getPage(skip, top, filterconfig);
-    if (cont._photoList.getPage(skip,top+1,filterconfig).length>10) {
+    cont._photoList.getPage(skip, top, filterconfig)
+    .then((posts)=>{
+      cont._view.showTape(posts);
+      cont._postOnScreen = posts.length;
+     });
+    cont._photoList.getPage(skip,top+1,filterconfig)
+    .then((posts)=>{
+      if(posts.length>10) {
       document.querySelector('.loadmore').style.display = 'block';
     }
     else{
       document.querySelector('.loadmore').style.display='none';
-    }
-    cont._view.showTape(posts);
-    cont._postOnScreen = posts.length;
+    }});
+ 
     if(cont._postOnScreen==0){
       document.querySelector('.no-photos').style.display='block';
     }
@@ -97,8 +102,9 @@ class Controller {
     post.photoLink = form.querySelector('.imageURL').value;
     post.deleted = false;
     const tags = form.querySelector('.itags').value.split(' ');
-    post.hashtags = tags.filter(item =>item.charAt(0)=='#');
-    alert(post.hashtags);
+      post.hashtags = tags.filter(item => item.charAt(0) == '#');
+  
+    
     let flag;
     const id = form.querySelector('.hidden').textContent;
     if (id > 0) {
@@ -118,7 +124,7 @@ class Controller {
       form.querySelector('.imageURL').value = '';
       form.querySelector('.inputfile').value = '';
       cont._view._clearFilter();
-      localStorage.setItem('posts', JSON.stringify(cont._photoList._posts));
+      //localStorage.setItem('posts', JSON.stringify(cont._photoList._posts));
       cont._showTape();
     }
   }
@@ -126,24 +132,24 @@ class Controller {
   _removePost(id) {
     const del=confirm('Delete photopost?');
     if(del){
-    cont._photoList.get(id).deleted = true;
-    localStorage.setItem('posts', JSON.stringify(cont._photoList._posts));
-    cont._showTape();
+    cont._photoList.remove(id)
+    .then(cont._showTape());
+    //localStorage.setItem('posts', JSON.stringify(cont._photoList._posts));
+     
     }
   }
 
   _editPost(id) {
-    const post = cont._photoList.get(`${id}`);
+    const post = cont._photoList.get(id).then((post)=>{
     Controller._showAddForm();
     const form = document.querySelector('.addPost');
     form.querySelector('.idescription').value = post.description;
     form.querySelector('.itags').value = post.hashtags;
     form.querySelector('.imageURL').value = post.photoLink;
     form.querySelector('.preimage').src = post.photoLink;
-    const d = new Date(post.createdAt);
-    const fd = `${d.getMonth() + 1}.${d.getDate()}.${d.getFullYear()} ${d.getHours()}:${d.getMinutes()}`;
-    form.querySelector('.idate').textContent = `Created at: ${fd}`;
+    form.querySelector('.idate').textContent = `Created at: ${post.createdAt}`;
     form.querySelector('.hidden').textContent = post.id;
+    });
   }
 
   static _filterPosts(e) {
@@ -242,7 +248,8 @@ cont._showTape();
   const mainArticle = document.querySelector('.mainArticle');
   mainArticle.addEventListener('click', Controller._postChange);
   const deletePost = document.querySelectorAll('.delete');
-  deletePost.forEach(item => item.addEventListener('click', Controller._removePost));
+    deletePost.forEach(item => item.addEventListener('click', Controller._removePost));
+
 }());
 
 function readURL(input) {
